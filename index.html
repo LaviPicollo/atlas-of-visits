@@ -1,0 +1,1445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Atlas of Visits</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Atlas">
+<meta name="description" content="Colour in the countries, provinces and cities you have visited.">
+<meta name="theme-color" content="#FFFDF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141B22" media="(prefers-color-scheme: dark)">
+<style>
+  :root{
+    color-scheme:light dark;
+    padding-top:env(safe-area-inset-top, 0px);
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  html{scroll-padding-top:env(safe-area-inset-top, 0px)}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none !important}
+</style>
+</head>
+<body>
+<style>
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 400 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(fonts/fredoka-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 400 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(fonts/fredoka-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(fonts/nunito-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(fonts/nunito-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+  :root{
+    /* Flat and friendly: cream land on a bright sea, one warm colour for
+       everywhere you have been. No shadows, no gradients, no hairlines. */
+    --paper:#FFFDF7; --panel:#FFFFFF; --panel-2:#F3EFE4;
+    --ink:#2B2A26; --ink-2:#6E6A60; --ink-3:#A29C8E;
+    --hair:#E7E1D2;
+    --sea:#9FD8F0; --land:#FFF8E8; --border:#D4C3A0; --border-2:#E8DEC8;
+    --mark:#FF8A4C; --mark-line:#E8691F; --mark-soft:#FFE3CF;
+    /* Four colours for the countries map, arranged so no two that touch
+       share one. */
+    --m0:#FF8A4C; --m0s:#DD5F17;
+    --m1:#FFC845; --m1s:#D79B00;
+    --m2:#5CC281; --m2s:#2F9757;
+    --m3:#52A0E0; --m3s:#2470B4;
+    --pin-ring:#FFFFFF;
+    --danger:#D4452A; --danger-soft:#FBE8E3;
+    --hover:#FFE9D6;
+    --r:20px; --r-sm:13px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#141B22; --panel:#1E2730; --panel-2:#27313C;
+      --ink:#F2EFE7; --ink-2:#AFB7C0; --ink-3:#7D8691;
+      --hair:#2E3945;
+      --sea:#143C55; --land:#F3EAD6; --border:#B9A880; --border-2:#D8CCAC;
+      --mark:#FF8A4C; --mark-line:#C9500F; --mark-soft:#3A2518;
+      --m0:#FF8A4C; --m0s:#C9500F;
+      --m1:#FFC845; --m1s:#C08A00;
+      --m2:#5CC281; --m2s:#2A8A4F;
+      --m3:#52A0E0; --m3s:#1F63A2;
+      --pin-ring:#FFFFFF;
+      --danger:#F08268; --danger-soft:#33201B;
+      --hover:#F7D9BC;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#141B22; --panel:#1E2730; --panel-2:#27313C;
+    --ink:#F2EFE7; --ink-2:#AFB7C0; --ink-3:#7D8691;
+    --hair:#2E3945;
+    --sea:#143C55; --land:#F3EAD6; --border:#B9A880; --border-2:#D8CCAC;
+    --mark:#FF8A4C; --mark-line:#C9500F; --mark-soft:#3A2518;
+      --m0:#FF8A4C; --m0s:#C9500F;
+      --m1:#FFC845; --m1s:#C08A00;
+      --m2:#5CC281; --m2s:#2A8A4F;
+      --m3:#52A0E0; --m3s:#1F63A2;
+    --pin-ring:#FFFFFF;
+    --danger:#F08268; --danger-soft:#33201B;
+    --hover:#F7D9BC;
+  }
+
+  *{box-sizing:border-box}
+  button, .labeltoggle, nav.plates, ul.items li{
+    -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none;
+  }
+  body{
+    background:var(--paper); color:var(--ink); margin:0;
+    font-family:Nunito,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:15.5px; line-height:1.55; font-weight:500; -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:1480px; margin-inline:auto; padding-inline:16px; padding-block:0}
+
+  /* ---------- header ---------- */
+  header.top{
+    position:sticky; top:env(safe-area-inset-top, 0px); z-index:30;
+    background:var(--paper); border-bottom:2px solid var(--hair);
+  }
+  .topin{display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding-block:12px}
+  .brand{display:flex; align-items:center; gap:10px; margin-right:auto}
+  .brand h1{
+    font-family:Fredoka,Nunito,sans-serif; font-weight:600; font-size:23px;
+    margin:0; letter-spacing:-.01em; white-space:nowrap; color:var(--ink);
+  }
+  .globe{width:28px; height:28px; flex:none}
+  nav.plates{display:flex; gap:4px; background:var(--panel-2); padding:4px; border-radius:var(--r-sm)}
+  nav.plates button{
+    font:inherit; font-family:Fredoka,Nunito,sans-serif; font-size:15px; font-weight:500;
+    color:var(--ink-2); background:none; border:0; border-radius:9px;
+    padding:7px 15px; cursor:pointer; white-space:nowrap;
+  }
+  nav.plates button[aria-selected="true"]{background:var(--mark); color:#fff}
+  @media (hover:hover){ nav.plates button:hover:not([aria-selected="true"]){color:var(--ink)} }
+
+  /* ---------- toolbar ---------- */
+  .toolbar{display:flex; gap:14px; align-items:center; flex-wrap:wrap; padding-block:18px 14px}
+  .searchbox{position:relative; flex:1 1 320px; min-width:0}
+  .searchbox input{
+    width:100%; font:inherit; font-size:16px; font-weight:500; color:var(--ink);
+    background:var(--panel); border:2px solid var(--hair); border-radius:var(--r-sm);
+    padding:12px 14px 12px 42px;
+  }
+  .searchbox input::placeholder{color:var(--ink-3); font-weight:500}
+  .searchbox input:focus{outline:none; border-color:var(--mark)}
+  .searchbox .mag{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:17px; height:17px; color:var(--ink-3); pointer-events:none;
+  }
+  .results{
+    position:absolute; z-index:25; top:calc(100% + 6px); left:0; right:0;
+    background:var(--panel); border:2px solid var(--hair); border-radius:var(--r-sm);
+    max-height:340px; overflow-y:auto; list-style:none; margin:0; padding:5px;
+  }
+  .results li{
+    display:flex; align-items:center; gap:10px; padding:9px 11px; border-radius:9px;
+    cursor:pointer; font-size:15px;
+  }
+  .results li.cur{background:var(--mark-soft)}
+  .results .flag{font-size:19px; line-height:1; width:24px; text-align:center; flex:none}
+  .results .nm{font-weight:600}
+  .results .mt{color:var(--ink-3); font-size:13px; margin-left:auto; text-align:right; white-space:nowrap}
+  .results .tick{color:var(--mark-line); font-weight:700; font-size:14px}
+  .results .none{padding:12px; color:var(--ink-3); font-size:14px}
+
+  .stats{display:flex; gap:10px; align-items:stretch}
+  .stat{
+    display:flex; flex-direction:column; gap:0; align-items:center; justify-content:center;
+    background:var(--panel-2); border-radius:var(--r-sm); padding:7px 15px; min-width:74px;
+  }
+  .stat b{
+    font-family:Fredoka,Nunito,sans-serif; font-variant-numeric:tabular-nums;
+    font-size:22px; font-weight:600; line-height:1.15; color:var(--ink);
+  }
+  .stat.lead{background:var(--mark)}
+  .stat.lead b{color:#fff}
+  .stat.lead span{color:#fff; opacity:.85}
+  .stat span{font-size:11px; color:var(--ink-2); font-weight:600; white-space:nowrap}
+
+  /* ---------- map ---------- */
+  .plate{position:relative}
+  .mapwrap{
+    position:relative; width:100%; aspect-ratio:2000000/1195751;
+    /* Fit the whole plate, controls included, between the toolbar and the
+       bottom of the screen, so nothing needs scrolling to reach. */
+    max-width:calc(80vh * 1.6727);
+    max-width:calc(min(80vh, 100svh - 158px) * 1.6727);
+    margin-inline:auto;
+    background:var(--sea); border-radius:var(--r); overflow:hidden;
+  }
+  .mapwrap svg{
+    display:block; width:100%; height:100%; touch-action:none; cursor:grab;
+    user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  .mapwrap svg.dragging{cursor:grabbing}
+  .sea{fill:var(--sea); pointer-events:none}
+  .shapes path{
+    fill:var(--land); stroke:var(--bc, var(--border));
+    stroke-width:calc(var(--bw) * var(--u));
+    stroke-linejoin:round; stroke-linecap:round;
+  }
+  .shapes path.on{fill:var(--mark); stroke:var(--mark-line)}
+  .shapes path.hot:not(.static){fill:var(--hover)}
+  .shapes path.on.hot{fill:var(--mark-line)}
+  .shapes path.g0.on{fill:var(--m0); stroke:var(--m0s)}
+  .shapes path.g1.on{fill:var(--m1); stroke:var(--m1s)}
+  .shapes path.g2.on{fill:var(--m2); stroke:var(--m2s)}
+  .shapes path.g3.on{fill:var(--m3); stroke:var(--m3s)}
+  .shapes path.g0.on.hot{fill:var(--m0s)}
+  .shapes path.g1.on.hot{fill:var(--m1s)}
+  .shapes path.g2.on.hot{fill:var(--m2s)}
+  .shapes path.g3.on.hot{fill:var(--m3s)}
+  .outline{
+    fill:none; stroke:var(--border); stroke-width:calc(2.2px * var(--u));
+    pointer-events:none; stroke-linejoin:round; stroke-linecap:round;
+  }
+  /* Markers sit in counter-scaled groups, so every length below is CSS pixels
+     and stays the same size whatever the zoom. */
+  .dot-o, .pin-o{fill:var(--pin-ring)}
+  .dot-i, .pin-i{fill:var(--mark)}
+  .pin-hit{fill:transparent; cursor:pointer}
+  @media (hover:hover){ .pins g:hover .pin-i{fill:var(--mark-line)} }
+  .pinlabel{
+    font-family:Nunito,sans-serif; font-weight:700; font-size:12px;
+    fill:var(--ink); stroke:var(--land); stroke-width:3.4;
+    paint-order:stroke fill; pointer-events:none;
+  }
+  .nolabels .pinlabel{display:none}
+
+  .mapui{position:absolute; inset:auto 12px 12px auto; display:flex; flex-direction:column; gap:7px}
+  .mapui button{
+    width:40px; height:40px; display:grid; place-items:center;
+    background:var(--panel); color:var(--ink-2); border:0;
+    border-radius:12px; cursor:pointer; font:inherit;
+    font-family:Fredoka,Nunito,sans-serif; font-size:21px; line-height:1;
+  }
+  @media (hover:hover){ .mapui button:hover{background:var(--mark); color:#fff} }
+  .mapui button:focus-visible, nav.plates button:focus-visible, .txtbtn:focus-visible{
+    outline:3px solid var(--mark-line); outline-offset:2px;
+  }
+  .tip{
+    position:absolute; pointer-events:none; z-index:12; opacity:0; transition:opacity .09s;
+    background:var(--ink); color:var(--paper); font-size:13px; font-weight:700;
+    padding:5px 10px; border-radius:9px; white-space:nowrap; transform:translate(-50%,-150%);
+  }
+  .tip.show{opacity:1}
+  .loading{
+    position:absolute; inset:0; display:grid; place-items:center;
+    font-size:15px; font-weight:600; color:var(--ink-2); background:var(--sea);
+  }
+
+  /* ---------- listing ---------- */
+  .listing{padding-block:24px 36px}
+  .lhead{
+    display:flex; align-items:center; gap:12px; padding-bottom:12px;
+    border-bottom:2px solid var(--hair); margin-bottom:4px; flex-wrap:wrap;
+  }
+  .lhead h2{font-family:Fredoka,Nunito,sans-serif; font-size:19px; font-weight:600; margin:0}
+  .lhead .count{font-size:14px; color:var(--ink-3); font-weight:600}
+  .lhead .acts{margin-left:auto; display:flex; gap:10px; align-items:center}
+  .txtbtn{
+    font:inherit; font-size:14px; font-weight:600; color:var(--ink-2); background:var(--panel-2);
+    border:0; border-radius:10px; padding:7px 13px; cursor:pointer;
+  }
+  @media (hover:hover){ .txtbtn:hover{color:var(--ink)} }
+  .txtbtn.arm, .txtbtn.arm:hover{color:#fff; background:var(--danger)}
+  .grp{break-inside:avoid; margin-top:20px}
+  .grp h3{
+    font-size:13px; color:var(--ink-2); font-weight:700; margin:0 0 6px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .grp h3 .gc{color:var(--ink-3); font-weight:600}
+  .cols{columns:280px; column-gap:26px}
+  ul.items{list-style:none; margin:0; padding:0}
+  ul.items li{
+    display:flex; align-items:center; gap:9px; padding:6px 8px; border-radius:10px;
+    font-size:15px; break-inside:avoid;
+  }
+  @media (hover:hover){ ul.items li:hover{background:var(--panel-2)} }
+  ul.items .flag{font-size:17px; line-height:1; width:22px; text-align:center; flex:none}
+  ul.items .nm{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600}
+  ul.items .sub{color:var(--ink-3); font-size:13px; font-weight:500}
+  ul.items button{
+    flex:none; width:26px; height:26px; display:grid; place-items:center; opacity:0;
+    background:none; border:0; border-radius:8px; color:var(--ink-3); cursor:pointer; font-size:15px;
+  }
+  ul.items button:focus-visible{opacity:1}
+  @media (hover:hover){
+    ul.items li:hover button{opacity:1}
+    ul.items button:hover{background:var(--hair); color:var(--ink)}
+  }
+  @media (hover:none){ ul.items button{opacity:1} }
+  .empty{padding:28px 0; color:var(--ink-2); font-size:15.5px; max-width:62ch}
+  .labeltoggle{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:var(--ink-2); cursor:pointer}
+  .labeltoggle input{accent-color:var(--mark); width:17px; height:17px}
+  .saving{font-size:12px; font-weight:600; color:var(--ink-3); opacity:0; transition:opacity .2s; align-self:center}
+  .saving.on{opacity:1}
+  .backup{display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding-bottom:14px}
+  .backup-note{font-size:13px; font-weight:600; color:var(--mark-line)}
+  .credits{
+    max-width:1180px; margin-inline:auto; padding-inline:16px;
+    padding-block:16px 36px; color:var(--ink-3); font-size:12.5px; line-height:1.7;
+    border-top:2px solid var(--hair);
+  }
+  /* Finger-sized controls wherever the pointer is coarse. */
+  @media (pointer:coarse){
+    nav.plates button{padding:11px 18px; font-size:16px}
+    .mapui{inset:auto 14px 14px auto; gap:9px}
+    .mapui button{width:48px; height:48px; font-size:24px; border-radius:14px}
+    .results li{padding:13px 12px; font-size:16px}
+    ul.items li{padding:9px 8px}
+    ul.items button{width:40px; height:40px; font-size:18px}
+    .txtbtn{padding:11px 16px; font-size:15px}
+    .labeltoggle{padding:8px 4px}
+    .labeltoggle input{width:21px; height:21px}
+    .searchbox input{padding:14px 14px 14px 44px}
+  }
+  @media (prefers-reduced-motion:reduce){ *{transition:none !important} }
+  /* On a tablet the map is the point, so it runs the full width of the screen
+     and the furniture around it shrinks to leave it room. */
+  @media (max-width:1100px){
+    .wrap{padding-inline:12px}
+    .mapwrap{
+      max-width:none; width:calc(100% + 24px); margin-inline:-12px;
+      border-radius:var(--r-sm);
+    }
+    .toolbar{padding-block:12px 10px; gap:10px}
+    .listing{padding-block:18px 32px}
+  }
+  /* Landscape on a tablet is short: trim the furniture so the map keeps the
+     height it needs. */
+  @media (max-height:860px) and (orientation:landscape){
+    .topin{padding-block:6px}
+    .brand h1{font-size:19px}
+    .globe{width:24px; height:24px}
+    .toolbar{padding-block:9px 9px}
+    .searchbox input{padding:10px 14px 10px 42px}
+    .searchbox .mag{left:13px}
+    .stat{padding:5px 13px}
+    .stat b{font-size:19px}
+    .stat span{font-size:10.5px}
+  }
+  @media (max-width:640px){
+    .brand h1{font-size:20px}
+    .stats{width:100%}
+    .stat{flex:1 1 0; min-width:0; padding:6px 8px}
+    .stat b{font-size:19px}
+    nav.plates button{padding:9px 13px; font-size:15px}
+  }
+</style>
+
+<header class="top">
+  <div class="wrap topin">
+    <div class="brand">
+      <svg class="globe" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="14" fill="#9FD8F0"/>
+        <path d="M6 12c3 1 4-1 7 0s3 3 6 2 4-3 6-2M4 20c3-1 5 1 8 0s4-3 7-2 5 2 7 1" fill="none" stroke="#FFF8E8" stroke-width="3.4" stroke-linecap="round"/>
+        <circle cx="16" cy="16" r="14" fill="none" stroke="#FF8A4C" stroke-width="3"/>
+      </svg>
+      <h1>Atlas of Visits</h1>
+    </div>
+    <nav class="plates" role="tablist" id="tabs"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<footer class="credits">
+  <div class="backup">
+    <button type="button" class="txtbtn" id="exportBtn">Back up my places</button>
+    <button type="button" class="txtbtn" id="importBtn">Restore from a backup</button>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+    <span class="backup-note" id="backupNote"></span>
+  </div>
+  Country outlines from geoBoundaries (CC&nbsp;BY&nbsp;4.0) and Natural Earth &middot;
+  provinces and states from Natural Earth &middot; towns and cities from GeoNames (CC&nbsp;BY&nbsp;4.0).
+  The map is a flat rectangular world, so countries near the poles are drawn wider
+  than they really are; the land percentages are measured on the globe and stay true.
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ------------------------------------------------------------------ setup */
+var MAPW = 2000000, MAPH = 1195751;
+function fmt(n){ return n.toLocaleString("en-GB"); }
+var COMBINING = new RegExp("[" + String.fromCharCode(0x300) + "-" + String.fromCharCode(0x36f) + "]", "g");
+function fold(s){
+  return (s || "").normalize("NFD").replace(COMBINING, "")
+    .replace(/ø/g,"o").replace(/ł/g,"l").replace(/đ/g,"d").replace(/ß/g,"ss")
+    .replace(/æ/g,"ae").replace(/œ/g,"oe").replace(/ı/g,"i").toLowerCase().trim();
+}
+function el(tag, cls, txt){
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (txt != null) e.textContent = txt;
+  return e;
+}
+function svgEl(tag, attrs){
+  var e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (var k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+/* --------------------------------------------------------------- storage */
+var dbP = Promise.resolve(null);   /* this build keeps places on the device */
+var LIVE = {};
+function Store(key){
+  LIVE[key] = this;
+  this.key = key; this.ids = new Set(); this.subs = [];
+  this.ref = null; this.timer = null; this.busy = false; this.dirty = false;
+  try {
+    var raw = localStorage.getItem("atlas:" + key);
+    if (raw) JSON.parse(raw).forEach(this.ids.add, this.ids);
+  } catch (e) {}
+  var self = this;
+  dbP.then(function(db){
+    if (!db) return;
+    self.ref = db.doc("visits/" + key);
+    self.ref.onSnapshot(function(snap){
+      if (!snap.exists){
+        if (self.ids.size) self.flush();
+        return;
+      }
+      var arr = snap.data().ids;
+      if (!Array.isArray(arr)) return;
+      if (snap.metadata.hasPendingWrites) return;
+      var next = new Set(arr);
+      if (next.size === self.ids.size && arr.every(function(i){ return self.ids.has(i); })) return;
+      self.ids = next; self.cache(); self.emit();
+    }, function(){});
+  });
+}
+Store.prototype.has = function(id){ return this.ids.has(id); };
+Store.prototype.toggle = function(id){
+  if (this.ids.has(id)) this.ids.delete(id); else this.ids.add(id);
+  this.changed();
+  return this.ids.has(id);
+};
+Store.prototype.hasAll = function(ids){
+  for (var i = 0; i < ids.length; i++) if (!this.ids.has(ids[i])) return false;
+  return ids.length > 0;
+};
+Store.prototype.setMany = function(ids, on){
+  var self = this;
+  ids.forEach(function(id){ if (on) self.ids.add(id); else self.ids.delete(id); });
+  this.changed();
+  return on;
+};
+Store.prototype.remove = function(id){ if (this.ids.delete(id)) this.changed(); };
+Store.prototype.clear = function(){ this.ids.clear(); this.changed(); };
+Store.prototype.changed = function(){ this.cache(); this.emit(); this.schedule(); };
+Store.prototype.cache = function(){
+  try { localStorage.setItem("atlas:" + this.key, JSON.stringify([].concat(Array.from(this.ids)))); } catch (e) {}
+};
+Store.prototype.emit = function(){ this.subs.forEach(function(f){ f(); }); };
+Store.prototype.on = function(f){ this.subs.push(f); };
+Store.prototype.schedule = function(){
+  var self = this;
+  clearTimeout(this.timer);
+  this.timer = setTimeout(function(){ self.flush(); }, 700);
+};
+Store.prototype.flush = function(){
+  var self = this;
+  if (!this.ref) return;
+  if (this.busy){ this.dirty = true; return; }
+  this.busy = true;
+  setSaving(true);
+  this.ref.set({ ids: Array.from(this.ids), updated: Date.now() }).catch(function(){}).then(function(){
+    self.busy = false;
+    setSaving(false);
+    if (self.dirty){ self.dirty = false; self.flush(); }
+  });
+};
+var savingEls = [];
+function setSaving(on){ savingEls.forEach(function(e){ e.classList.toggle("on", on); }); }
+
+/* ------------------------------------------------------------- map view */
+function MapView(wrap, opts){
+  var self = this;
+  this.opts = opts;
+  /* Zoom and pan drive the SVG viewBox rather than a transform: coordinates
+     stay inside the map's own range however far you zoom, so deep zoom keeps
+     its precision. `u` is map units per CSS pixel, which lets line weights and
+     markers be specified in plain pixels. */
+  this.vx = 0; this.vy = 0; this.vw = MAPW; this.vh = MAPH; this.u = 1;
+  this.rect = { left: 0, top: 0, width: 1, height: 1 };
+  var svg = svgEl("svg", { viewBox: "0 0 " + MAPW + " " + MAPH, preserveAspectRatio: "xMidYMid meet" });
+  var root = svgEl("g", {});
+  svg.appendChild(root);
+  root.appendChild(svgEl("rect", { "class": "sea", x: 0, y: 0, width: MAPW, height: MAPH }));
+  this.svg = svg; this.root = root;
+  this.shapes = svgEl("g", { "class": "shapes" });
+  this.shapes.style.setProperty("--bw", (opts.borderWidth || 1) + "px");
+  if (opts.borderColor) this.shapes.style.setProperty("--bc", opts.borderColor);
+  root.appendChild(this.shapes);
+  this.over = svgEl("g", {});
+  root.appendChild(this.over);
+  wrap.appendChild(svg);
+
+  var tip = el("div", "tip"); wrap.appendChild(tip); this.tip = tip;
+
+  var ui = el("div", "mapui");
+  [["+", "Zoom in", function(){ self.zoomBy(1.8); }],
+   ["\u2013", "Zoom out", function(){ self.zoomBy(1 / 1.8); }],
+   ["\u21ba", "Whole world", function(){ self.reset(); }]].forEach(function(b){
+    var btn = el("button", null, b[0]);
+    btn.title = b[1]; btn.setAttribute("aria-label", b[1]);
+    btn.addEventListener("click", b[2]);
+    ui.appendChild(btn);
+  });
+  wrap.appendChild(ui);
+
+  var ro = new ResizeObserver(function(){ self.measure(); });
+  ro.observe(wrap);
+  this.measure();
+
+  /* ---- gestures ----------------------------------------------------------
+     Pointer events can arrive faster than the screen refreshes, so moves only
+     record where the fingers are; one animation frame does the redraw. A flick
+     hands its speed to a glide that decays, which is what makes dragging feel
+     smooth rather than stepped. */
+  var pts = new Map(), last = null, moved = 0, startW = MAPW, track = [];
+  var lastTap = 0, tapX = 0, tapY = 0, tapId = null;
+  function centroid(){
+    var xs = 0, ys = 0, n = 0;
+    pts.forEach(function(p){ xs += p.x; ys += p.y; n++; });
+    return { x: xs / n, y: ys / n, n: n };
+  }
+  function spread(){
+    var a = Array.from(pts.values());
+    if (a.length < 2) return 0;
+    return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+  }
+  svg.addEventListener("pointerdown", function(e){
+    if (e.button !== undefined && e.button !== 0) return;
+    try { svg.setPointerCapture(e.pointerId); } catch (err) {}
+    self.stop();
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    self.measure();
+    moved = 0; startW = self.vw;
+    track = [{ t: performance.now(), x: e.clientX, y: e.clientY }];
+    last = { c: centroid(), s: spread() };
+    svg.classList.add("dragging");
+    self.hideTip();
+  });
+  svg.addEventListener("pointermove", function(e){
+    if (!pts.has(e.pointerId)){ self.hover(e); return; }
+    var prev = pts.get(e.pointerId);
+    moved += Math.abs(e.clientX - prev.x) + Math.abs(e.clientY - prev.y);
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    var c = centroid(), s = spread();
+    self.vx -= (c.x - last.c.x) * self.u;
+    self.vy -= (c.y - last.c.y) * self.u;
+    if (pts.size > 1 && last.s > 0 && s > 0) self.zoomAround(c.x, c.y, s / last.s);
+    last = { c: c, s: s };
+    track.push({ t: performance.now(), x: c.x, y: c.y });
+    if (track.length > 6) track.shift();
+    self.schedule();
+  });
+  function up(e){
+    if (!pts.has(e.pointerId)) return;
+    pts.delete(e.pointerId);
+    if (pts.size){ last = { c: centroid(), s: spread() }; return; }
+    svg.classList.remove("dragging");
+    var now = performance.now();
+    if (moved < 8 && Math.abs(self.vw - startW) < 1){
+      if (now - lastTap < 320 && Math.abs(e.clientX - tapX) < 30 && Math.abs(e.clientY - tapY) < 30){
+        lastTap = 0;
+        /* The first tap of a double tap already toggled whatever was under the
+           finger; put it back, because the gesture meant zoom. */
+        if (tapId && self.opts.onPick) self.opts.onPick(tapId);
+        tapId = null;
+        self.measure();
+        var r = self.rect, fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+        var tw = Math.max(MIN_VW, self.vw / 2.2);
+        self.animateTo(self.vx + fx * self.vw - fx * tw,
+                       self.vy + fy * self.vh - fy * (tw * MAPH / MAPW), tw);
+      } else {
+        lastTap = now; tapX = e.clientX; tapY = e.clientY;
+        tapId = self.tap(e.clientX, e.clientY);
+      }
+      return;
+    }
+    /* Velocity over the last ~90 ms only: anything older is a stale sample
+       from before a pause and would understate a genuine flick. A pause just
+       before letting go means the user aimed rather than flicked, so no glide. */
+    var lastPt = track[track.length - 1], first = null;
+    for (var i = track.length - 2; i >= 0; i--){
+      if (lastPt.t - track[i].t > 90) break;
+      first = track[i];
+    }
+    if (!first && track.length > 1) first = track[track.length - 2];
+    if (first && lastPt && now - lastPt.t < 120 && lastPt.t - first.t >= 8){
+      var dt = lastPt.t - first.t;
+      self.glide((lastPt.x - first.x) / dt, (lastPt.y - first.y) / dt);
+    }
+  }
+  svg.addEventListener("pointerup", up);
+  svg.addEventListener("pointercancel", up);
+  svg.addEventListener("pointerleave", function(){ self.hideTip(); });
+  svg.addEventListener("dragstart", function(e){ e.preventDefault(); });
+  ["gesturestart", "gesturechange", "gestureend"].forEach(function(n){
+    svg.addEventListener(n, function(e){ e.preventDefault(); }, { passive: false });
+  });
+  svg.addEventListener("wheel", function(e){
+    /* A trackpad pinch arrives as ctrl+wheel; a plain two-finger scroll is left
+       alone so the page still scrolls under the cursor. A mouse wheel (coarse,
+       no ctrl) zooms, which is what a wheel is for on a map. */
+    if (!e.ctrlKey && e.deltaMode === 0) return;
+    e.preventDefault();
+    self.stop();
+    self.measure();
+    self.zoomAround(e.clientX, e.clientY,
+      Math.pow(0.985, e.deltaY * (e.deltaMode === 1 ? 16 : 1)));
+    self.schedule();
+  }, { passive: false });
+  svg.addEventListener("dblclick", function(e){
+    self.measure();
+    var r = self.rect, px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+    var vw2 = Math.max(MIN_VW, self.vw / 2.2);
+    self.animateTo(self.vx + px * self.vw - px * vw2, self.vy + py * self.vh - py * (vw2 * MAPH / MAPW), vw2);
+  });
+}
+var MIN_VW = MAPW / 1500;   /* deepest zoom: about 27 km across */
+
+MapView.prototype.measure = function(){
+  var r = this.svg.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  this.rect = r;
+  this.u = this.vw / r.width;
+  this.syncU();
+};
+/* Redraw at most once per animation frame, however fast the events arrive. */
+MapView.prototype.schedule = function(){
+  var self = this;
+  if (this.raf) return;
+  this.raf = requestAnimationFrame(function(){ self.raf = 0; self.apply(); });
+};
+MapView.prototype.stop = function(){
+  if (this.glideRaf) cancelAnimationFrame(this.glideRaf);
+  if (this.animRaf) cancelAnimationFrame(this.animRaf);
+  this.glideRaf = this.animRaf = 0;
+};
+MapView.prototype.apply = function(){
+  this.vw = Math.max(MIN_VW, Math.min(MAPW, this.vw));
+  this.vh = this.vw * MAPH / MAPW;
+  this.vx = Math.max(0, Math.min(MAPW - this.vw, this.vx));
+  this.vy = Math.max(0, Math.min(MAPH - this.vh, this.vy));
+  this.svg.setAttribute("viewBox",
+    this.vx.toFixed(1) + " " + this.vy.toFixed(1) + " " + this.vw.toFixed(1) + " " + this.vh.toFixed(1));
+  this.u = this.vw / (this.rect.width || 1);
+  this.syncU();
+};
+/* Changing --u restyles every path, so throttle it: line weights settle a
+   frame or two behind a pinch rather than stalling it. */
+MapView.prototype.syncU = function(){
+  var self = this;
+  if (this._ut) return;
+  this._ut = setTimeout(function(){
+    self._ut = 0;
+    self.root.style.setProperty("--u", self.u.toFixed(5));
+    self.updateMarkers();
+    self.applyCull();
+  }, 55);
+};
+/* Nothing culls offscreen geometry for us, so the cost of a repaint is the
+   whole world however far in you are zoomed. Hiding what the viewport cannot
+   reach turns a ~200 ms frame into a ~30 ms one. */
+/* Wider than about 8,000 km across, the simplified outline sits within a pixel
+   of the real one and repaints twice as fast, so that is what gets drawn; full
+   detail comes back as you zoom in. */
+var FINE_BELOW = MAPW / 5;
+MapView.prototype.setCullables = function(list){ this.cullables = list; this.applyCull(true); };
+MapView.prototype.applyCull = function(force){
+  var list = this.cullables;
+  if (!list || !list.length) return;
+  var whole = this.vw > MAPW * 0.88;
+  var fine = this.vw < FINE_BELOW;
+  var padx = this.vw * 0.2, pady = this.vh * 0.2;
+  var x0 = this.vx - padx, x1 = this.vx + this.vw + padx;
+  var y0 = this.vy - pady, y1 = this.vy + this.vh + pady;
+  for (var i = 0; i < list.length; i++){
+    var it = list[i], b = it.b;
+    var vis = whole || !b || (b[0] <= x1 && b[2] >= x0 && b[1] <= y1 && b[3] >= y0);
+    if (force || vis !== it.v){ it.v = vis; it.el.style.display = vis ? "" : "none"; }
+    /* Only what is on screen needs swapping, so this stays cheap. */
+    if (vis && it.dc){
+      var want = fine ? it.d : it.dc;
+      if (it.cur !== want){ it.cur = want; it.el.setAttribute("d", want); }
+    }
+  }
+};
+/* Markers live in groups scaled by the current units-per-pixel, so their
+   contents can be sized in plain CSS pixels and never grow with the zoom. */
+MapView.prototype.setMarkers = function(list){ this.markers = list; this.updateMarkers(); };
+MapView.prototype.updateMarkers = function(){
+  var m = this.markers;
+  if (!m || !m.length) return;
+  var k = this.u.toFixed(5);
+  for (var i = 0; i < m.length; i++)
+    m[i].el.setAttribute("transform", "translate(" + m[i].x + " " + m[i].y + ") scale(" + k + ")");
+};
+/* Zoom keeping the point under the cursor or pinch centre pinned. */
+MapView.prototype.zoomAround = function(cx, cy, f){
+  var r = this.rect;
+  var px = (cx - r.left) / (r.width || 1), py = (cy - r.top) / (r.height || 1);
+  var mx = this.vx + px * this.vw, my = this.vy + py * this.vh;
+  var vw2 = Math.max(MIN_VW, Math.min(MAPW, this.vw / f));
+  this.vx = mx - px * vw2;
+  this.vy = my - py * (vw2 * MAPH / MAPW);
+  this.vw = vw2;
+};
+/* Carry a flick's speed on, decaying, until it runs out or hits an edge. */
+MapView.prototype.glide = function(vx, vy){
+  var self = this, prev = performance.now();
+  this.stop();
+  function step(now){
+    var dt = Math.min(now - prev, 48); prev = now;
+    var beforeX = self.vx, beforeY = self.vy;
+    self.vx -= vx * dt * self.u;
+    self.vy -= vy * dt * self.u;
+    self.apply();
+    if (Math.abs(self.vx - beforeX) < 0.01) vx = 0;
+    if (Math.abs(self.vy - beforeY) < 0.01) vy = 0;
+    var decay = Math.exp(-dt / 190);
+    vx *= decay; vy *= decay;
+    self.glideRaf = Math.hypot(vx, vy) > 0.012 ? requestAnimationFrame(step) : 0;
+  }
+  this.glideRaf = requestAnimationFrame(step);
+};
+/* Ease to a new view instead of jumping, so the eye can follow the move. */
+MapView.prototype.animateTo = function(tx, ty, tw, ms){
+  var self = this;
+  this.stop();
+  tw = Math.max(MIN_VW, Math.min(MAPW, tw));
+  var sx = this.vx, sy = this.vy, sw = this.vw;
+  var th = tw * MAPH / MAPW;
+  tx = Math.max(0, Math.min(MAPW - tw, tx));
+  ty = Math.max(0, Math.min(MAPH - th, ty));
+  if (Math.abs(Math.log(tw / sw)) < 0.004 && Math.abs(tx - sx) < 1 && Math.abs(ty - sy) < 1) return;
+  var dur = ms || (Math.abs(Math.log(tw / sw)) > 1.4 ? 480 : 340), t0 = performance.now();
+  var logS = Math.log(sw), logT = Math.log(tw);
+  function step(now){
+    var k = Math.min(1, (now - t0) / dur);
+    var e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    self.vw = Math.exp(logS + (logT - logS) * e);
+    self.vx = sx + (tx - sx) * e;
+    self.vy = sy + (ty - sy) * e;
+    self.apply();
+    self.animRaf = k < 1 ? requestAnimationFrame(step) : 0;
+  }
+  this.animRaf = requestAnimationFrame(step);
+};
+MapView.prototype.zoomBy = function(f){
+  this.measure();
+  var vw2 = Math.max(MIN_VW, Math.min(MAPW, this.vw / f));
+  this.animateTo(this.vx + (this.vw - vw2) / 2, this.vy + (this.vh - vw2 * MAPH / MAPW) / 2, vw2, 260);
+};
+MapView.prototype.reset = function(){ this.animateTo(0, 0, MAPW); };
+MapView.prototype.viewRect = function(){
+  return { x0: this.vx, y0: this.vy, x1: this.vx + this.vw, y1: this.vy + this.vh };
+};
+MapView.prototype.centreOn = function(x, y, vw){
+  vw = Math.max(MIN_VW, Math.min(MAPW, vw || this.vw));
+  this.animateTo(x - vw / 2, y - (vw * MAPH / MAPW) / 2, vw);
+};
+MapView.prototype.fit = function(bb, pad){
+  pad = pad || 2.4;
+  var w = Math.max(bb[2] - bb[0], 1) * pad;
+  var h = Math.max(bb[3] - bb[1], 1) * pad * MAPW / MAPH;
+  this.centreOn((bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2, Math.max(w, h));
+};
+MapView.prototype.ensure = function(x, y){
+  var v = this.viewRect(), mw = this.vw * 0.12, mh = this.vh * 0.12;
+  if (x < v.x0 + mw || x > v.x1 - mw || y < v.y0 + mh || y > v.y1 - mh) this.centreOn(x, y);
+};
+MapView.prototype.pick = function(cx, cy){
+  var e = document.elementFromPoint(cx, cy);
+  if (!e || !e.closest) return null;
+  var p = e.closest("[data-id]");
+  return (p && (this.pickRoot || this.shapes).contains(p)) ? p : null;
+};
+MapView.prototype.tap = function(cx, cy){
+  var p = this.pick(cx, cy);
+  if (!p || !this.opts.onPick) return null;
+  var id = p.getAttribute("data-id");
+  this.opts.onPick(id);
+  return id;
+};
+MapView.prototype.hover = function(e){
+  if (e.pointerType !== "mouse" || !this.opts.label) return;
+  var self = this;
+  if (this._raf) return;
+  this._raf = requestAnimationFrame(function(){
+    self._raf = 0;
+    var p = self.pick(e.clientX, e.clientY);
+    if (self._hot && self._hot !== p) self._hot.classList.remove("hot");
+    if (!p){ self.hideTip(); self._hot = null; return; }
+    p.classList.add("hot"); self._hot = p;
+    var txt = self.opts.label(p.getAttribute("data-id"));
+    if (!txt){ self.hideTip(); return; }
+    var r = self.svg.parentNode.getBoundingClientRect();
+    self.tip.textContent = txt;
+    self.tip.style.left = (e.clientX - r.left) + "px";
+    self.tip.style.top = (e.clientY - r.top) + "px";
+    self.tip.classList.add("show");
+  });
+};
+MapView.prototype.hideTip = function(){
+  this.tip.classList.remove("show");
+  if (this._hot){ this._hot.classList.remove("hot"); this._hot = null; }
+};
+
+/* ------------------------------------------------------------- searching */
+function search(entries, q, limit){
+  var f = fold(q);
+  if (f.length < 1) return [];
+  var exact = [], pre = [], sub = [];
+  for (var i = 0; i < entries.length; i++){
+    var e = entries[i], hit = -1;
+    if (e.s === f) hit = 0;
+    else if (e.s.indexOf(f) === 0) hit = 1;
+    else if (e.s.indexOf(f) > 0) hit = 2;
+    else if (e.k){
+      for (var j = 0; j < e.k.length; j++){
+        var kk = e.k[j];
+        if (kk === f){ hit = 0; break; }
+        if (kk.indexOf(f) === 0){ hit = 1; break; }
+        if (kk.indexOf(f) > 0){ hit = 2; }
+      }
+    }
+    if (hit === 0) exact.push(e);
+    else if (hit === 1) { if (pre.length < 400) pre.push(e); }
+    else if (hit === 2) { if (sub.length < 400) sub.push(e); }
+  }
+  return exact.concat(pre, sub).slice(0, limit);
+}
+
+/* ---------------------------------------------------------------- panels */
+var PANELS = [
+  { key: "countries", tab: "Countries",
+    file: "data/countries.json", ph: "Search a country — Argentina, Japan, Uruguay…" },
+  { key: "provinces", tab: "Provinces",
+    file: "data/provinces.json", ph: "Search a province or state — Mendoza, Tuscany, Kerala…" },
+  { key: "cities",    tab: "Cities",
+    file: "data/cities.json", ph: "Search a city — Rosario, Kyoto, Ljubljana…" }
+];
+
+var tabsEl = document.getElementById("tabs"), mainEl = document.getElementById("main");
+var panels = {}, active = null;
+
+PANELS.forEach(function(cfg){
+  var btn = el("button");
+  btn.setAttribute("role", "tab");
+  btn.setAttribute("aria-selected", "false");
+  btn.textContent = cfg.tab;
+  btn.addEventListener("click", function(){ show(cfg.key); });
+  tabsEl.appendChild(btn);
+  cfg.btn = btn;
+
+  var sec = el("section", "plate");
+  sec.setAttribute("role", "tabpanel");
+  sec.hidden = true;
+  sec.innerHTML =
+    '<div class="toolbar">' +
+      '<div class="searchbox">' +
+        '<svg class="mag" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>' +
+        '<input type="search" id="q-' + cfg.key + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">' +
+      '</div>' +
+      '<div class="stats"></div>' +
+    '</div>' +
+    '<div class="mapwrap"><div class="loading">Drawing the map…</div></div>' +
+    '<div class="listing"></div>';
+  mainEl.appendChild(sec);
+  cfg.sec = sec;
+  cfg.input = sec.querySelector("input");
+  cfg.input.placeholder = cfg.ph;
+  cfg.mapwrap = sec.querySelector(".mapwrap");
+  cfg.statsEl = sec.querySelector(".stats");
+  cfg.listEl = sec.querySelector(".listing");
+  panels[cfg.key] = cfg;
+});
+
+function show(key){
+  PANELS.forEach(function(c){
+    var on = c.key === key;
+    c.btn.setAttribute("aria-selected", on ? "true" : "false");
+    c.sec.hidden = !on;
+  });
+  active = key;
+  try { localStorage.setItem("atlas:tab", key); } catch (e) {}
+  var c = panels[key];
+  if (!c.loaded){ c.loaded = true; boot(c); }
+  else if (c.view) c.view.measure();
+}
+
+/* --------------------------------------------------------------- booting */
+var countriesData = null;
+function loadCountries(){
+  if (!countriesData) countriesData = fetch("data/countries.json").then(function(r){ return r.json(); });
+  return countriesData;
+}
+function boot(cfg){
+  var p = cfg.key === "countries" ? loadCountries()
+        : cfg.key === "cities" ? Promise.all([fetch(cfg.file).then(function(r){ return r.json(); }), loadCountries()])
+        : fetch(cfg.file).then(function(r){ return r.json(); });
+  p.then(function(data){
+    cfg.mapwrap.innerHTML = "";
+    ({ countries: initCountries, provinces: initProvinces, cities: initCities })[cfg.key](cfg, data);
+  }).catch(function(){
+    cfg.mapwrap.innerHTML = '<div class="loading">Could not load the map data. Reload the page to try again.</div>';
+  });
+}
+
+function statRow(cfg, defs){
+  cfg.statsEl.innerHTML = "";
+  defs.forEach(function(d){
+    var s = el("div", "stat" + (d.lead ? " lead" : ""));
+    s.appendChild(el("b", null, d.v));
+    s.appendChild(el("span", null, d.l));
+    cfg.statsEl.appendChild(s);
+  });
+  var sv = el("div", "saving", "saving");
+  cfg.statsEl.appendChild(sv);
+  savingEls.push(sv);
+}
+
+function wireSearch(cfg, entries, render){
+  var box = cfg.sec.querySelector(".searchbox");
+  var list = null, cur = -1, rows = [];
+  function close(){ if (list){ list.remove(); list = null; rows = []; cur = -1; } }
+  function open(){
+    close();
+    var hits = search(entries, cfg.input.value, 40);
+    if (!cfg.input.value.trim()) return;
+    list = el("ul", "results");
+    if (!hits.length){
+      list.appendChild(el("li", "none", "Nothing matches “" + cfg.input.value.trim() + "”."));
+    }
+    rows = hits;
+    hits.forEach(function(e, i){
+      var li = el("li");
+      li.appendChild(el("span", "flag", e.f || "·"));
+      li.appendChild(el("span", "nm", e.n));
+      var meta = render.meta(e);
+      if (meta) li.appendChild(el("span", "mt", meta));
+      var marked = render.marked ? render.marked(e) : cfg.store.has(e.i);
+      if (marked) li.appendChild(el("span", "tick", "✓"));
+      li.addEventListener("mousedown", function(ev){ ev.preventDefault(); });
+      li.addEventListener("click", function(){ render.choose(e); close(); cfg.input.select(); });
+      li.addEventListener("mouseenter", function(){ setCur(i); });
+      list.appendChild(li);
+    });
+    box.appendChild(list);
+  }
+  function setCur(i){
+    if (!list) return;
+    var ls = list.querySelectorAll("li");
+    if (cur >= 0 && ls[cur]) ls[cur].classList.remove("cur");
+    cur = i;
+    if (ls[cur]){ ls[cur].classList.add("cur"); ls[cur].scrollIntoView({ block: "nearest" }); }
+  }
+  var t = null;
+  cfg.input.addEventListener("input", function(){
+    clearTimeout(t); t = setTimeout(open, 90);
+  });
+  cfg.input.addEventListener("keydown", function(e){
+    if (e.key === "ArrowDown"){ e.preventDefault(); if (list) setCur(Math.min(rows.length - 1, cur + 1)); else open(); }
+    else if (e.key === "ArrowUp"){ e.preventDefault(); setCur(Math.max(0, cur - 1)); }
+    else if (e.key === "Enter"){ e.preventDefault(); var pick = rows[cur < 0 ? 0 : cur]; if (pick){ render.choose(pick); close(); cfg.input.select(); } }
+    else if (e.key === "Escape"){ close(); cfg.input.blur(); }
+  });
+  cfg.input.addEventListener("blur", function(){ setTimeout(close, 140); });
+  cfg.input.addEventListener("focus", function(){ if (cfg.input.value) open(); });
+  cfg.refreshSearch = function(){ if (list) open(); };
+}
+
+function listShell(cfg, title, onClear){
+  cfg.listEl.innerHTML = "";
+  var head = el("div", "lhead");
+  head.appendChild(el("h2", null, title));
+  var cnt = el("span", "count", "");
+  head.appendChild(cnt);
+  var acts = el("div", "acts");
+  head.appendChild(acts);
+  cfg.listEl.appendChild(head);
+  var body = el("div", "cols");
+  cfg.listEl.appendChild(body);
+  return { count: cnt, acts: acts, body: body };
+}
+
+/* Two-step rather than a confirm() dialog: the artifact viewer's sandbox
+   swallows browser modals, so the first click arms the button instead. */
+function clearBtn(store, what){
+  var b = el("button", "txtbtn", "Clear all");
+  var armed = false, t = null;
+  function disarm(){
+    armed = false; clearTimeout(t);
+    b.classList.remove("arm"); b.textContent = "Clear all";
+  }
+  b.addEventListener("click", function(){
+    if (!store.ids.size){ disarm(); return; }
+    if (!armed){
+      armed = true;
+      b.classList.add("arm");
+      b.textContent = "Remove all " + fmt(store.ids.size) + " " + what + "?";
+      t = setTimeout(disarm, 6000);
+      return;
+    }
+    disarm();
+    store.clear();
+  });
+  b.addEventListener("blur", function(){ setTimeout(disarm, 120); });
+  store.on(function(){ if (!store.ids.size) disarm(); });
+  return b;
+}
+
+function groupList(body, groups, rowFn){
+  body.innerHTML = "";
+  groups.forEach(function(g){
+    var wrapG = el("div", "grp");
+    var h = el("h3", null, g.name);
+    h.appendChild(el("span", "gc", String(g.items.length)));
+    wrapG.appendChild(h);
+    var ul = el("ul", "items");
+    g.items.forEach(function(it){ ul.appendChild(rowFn(it)); });
+    wrapG.appendChild(ul);
+    body.appendChild(wrapG);
+  });
+}
+
+function itemRow(flagTxt, name, sub, onLocate, onRemove){
+  var li = el("li");
+  li.appendChild(el("span", "flag", flagTxt || "·"));
+  var nm = el("span", "nm", name);
+  if (sub){
+    nm.appendChild(document.createTextNode(" "));
+    nm.appendChild(el("span", "sub", sub));
+  }
+  li.appendChild(nm);
+  var loc = el("button", null, "◎");
+  loc.title = "Show on the map"; loc.setAttribute("aria-label", "Show " + name + " on the map");
+  loc.addEventListener("click", onLocate);
+  li.appendChild(loc);
+  var rm = el("button", null, "×");
+  rm.title = "Remove"; rm.setAttribute("aria-label", "Remove " + name);
+  rm.addEventListener("click", onRemove);
+  li.appendChild(rm);
+  return li;
+}
+
+/* ------------------------------------------------------------- plate I */
+function initCountries(cfg, data){
+  var feats = data.features, byId = {}, totalArea = 0, totalPop = 0;
+  var store = cfg.store = new Store("countries");
+  var view = cfg.view = new MapView(cfg.mapwrap, {
+    borderWidth: 1.1,
+    onPick: function(id){ if (byId[id] && !byId[id].x){ store.toggle(id); cfg.refreshSearch(); } },
+    label: function(id){ return byId[id] ? byId[id].n : ""; }
+  });
+  var frag = document.createDocumentFragment();
+  feats.forEach(function(f){
+    byId[f.i] = f;
+    if (!f.x){ totalArea += f.a; totalPop += f.p; }
+    var p = svgEl("path", { d: f.dc || f.d, "fill-rule": "evenodd", "data-id": f.i,
+                            "class": f.x ? "static" : "g" + (f.g || 0) });
+    f.el = p;
+    frag.appendChild(p);
+  });
+  view.shapes.appendChild(frag);
+  view.setCullables(feats.map(function(f){
+    return { el: f.el, b: f.b, d: f.d, dc: f.dc, cur: f.dc || f.d };
+  }));
+
+  var entries = feats.filter(function(f){ return !f.x; });
+  statRow(cfg, [{ v: "0", l: "countries", lead: true }, { v: "0%", l: "of land" }, { v: "0%", l: "of people" }]);
+  var sh = listShell(cfg, "Countries visited", store);
+  sh.acts.appendChild(clearBtn(store, "countries"));
+
+  wireSearch(cfg, entries, {
+    meta: function(e){ return e.c; },
+    choose: function(e){
+      var on = store.toggle(e.i);
+      if (on && e.b) view.ensure((e.b[0] + e.b[2]) / 2, (e.b[1] + e.b[3]) / 2);
+    }
+  });
+
+  function render(){
+    var sel = [], area = 0, pop = 0;
+    feats.forEach(function(f){
+      var on = store.has(f.i);
+      f.el.classList.toggle("on", on);
+      if (on){ sel.push(f); area += f.a; pop += f.p; }
+    });
+    var b = cfg.statsEl.querySelectorAll(".stat b");
+    b[0].textContent = fmt(sel.length);
+    b[1].textContent = (totalArea ? (area / totalArea * 100) : 0).toFixed(1) + "%";
+    b[2].textContent = (totalPop ? (pop / totalPop * 100) : 0).toFixed(1) + "%";
+    sh.count.textContent = sel.length ? fmt(sel.length) + " of " + fmt(entries.length) : "";
+    if (!sel.length){
+      sh.body.innerHTML = '<p class="empty">Nothing marked yet. Search for a country above, or tap it straight on the map — it turns colour and appears in this list.</p>';
+      return;
+    }
+    var by = {};
+    sel.forEach(function(f){ (by[f.c || "Elsewhere"] = by[f.c || "Elsewhere"] || []).push(f); });
+    var groups = Object.keys(by).sort().map(function(k){
+      return { name: k, items: by[k].sort(function(a, c){ return a.n.localeCompare(c.n); }) };
+    });
+    groupList(sh.body, groups, function(f){
+      return itemRow(f.f, f.n, null,
+        function(){ view.fit(f.b); cfg.mapwrap.scrollIntoView({ block: "nearest", behavior: "smooth" }); },
+        function(){ store.remove(f.i); });
+    });
+  }
+  store.on(render);
+  render();
+}
+
+/* ------------------------------------------------------------ plate II */
+function initProvinces(cfg, data){
+  var feats = data.features, byId = {}, totalArea = 0;
+  var store = cfg.store = new Store("provinces");
+  var view = cfg.view = new MapView(cfg.mapwrap, {
+    borderWidth: 0.7, borderColor: "var(--border-2)",
+    onPick: function(id){ if (byId[id]){ store.toggle(id); cfg.refreshSearch(); } },
+    label: function(id){ return byId[id] ? byId[id].n + " · " + byId[id].cn : ""; }
+  });
+  var frag = document.createDocumentFragment();
+  feats.forEach(function(f){
+    byId[f.i] = f;
+    totalArea += f.a;
+    if (f.d){
+      var p = svgEl("path", { d: f.dc || f.d, "fill-rule": "evenodd", "data-id": f.i });
+      f.el = p; frag.appendChild(p);
+    }
+  });
+  view.shapes.appendChild(frag);
+  var cull = feats.filter(function(f){ return f.el; })
+                  .map(function(f){ return { el: f.el, b: f.b }; });
+  var outlines = svgEl("g", {});
+  (data.outline || []).forEach(function(o){
+    var e = svgEl("path", { "class": "outline", d: o.d });
+    outlines.appendChild(e);
+    cull.push({ el: e, b: o.b });
+  });
+  view.over.appendChild(outlines);
+  view.setCullables(cull);
+  var dots = svgEl("g", {});
+  view.over.appendChild(dots);
+
+  /* Natural Earth's first-level units are finer than everyday usage in some
+     countries (110 Italian provinces, 232 UK districts). Where it records a
+     parent region, offer that as a single searchable unit covering its parts. */
+  var regionMap = {}, aliases = data.regionAliases || {};
+  function addToRegion(f, name, useAlts){
+    if (!name || fold(name) === fold(f.n)) return;
+    var key = "R:" + f.cn + ":" + name;
+    var r = regionMap[key];
+    if (!r){
+      r = regionMap[key] = { i: key, n: name, cn: f.cn, f: f.f, region: true,
+                             s: fold(name), keys: {}, ids: [], bb: null };
+      r.keys[fold(name + " " + f.cn)] = 1;
+      (aliases[f.cn + "|" + name] || []).forEach(function(a){ r.keys[fold(a)] = 1; });
+    }
+    r.ids.push(f.i);
+    /* Natural Earth carries a region's other names (Toscana / Tuscany) on each
+       member, so pull those up to make the region findable by any of them. */
+    if (useAlts) (f.k || []).forEach(function(a){ if (a !== f.s) r.keys[a] = 1; });
+    if (f.b) r.bb = r.bb ? [Math.min(r.bb[0], f.b[0]), Math.min(r.bb[1], f.b[1]),
+                            Math.max(r.bb[2], f.b[2]), Math.max(r.bb[3], f.b[3])] : f.b.slice();
+  }
+  feats.forEach(function(f){
+    addToRegion(f, f.rg, true);
+    addToRegion(f, f.gu, false);
+  });
+  var regions = Object.keys(regionMap).map(function(k){
+    var r = regionMap[k];
+    r.k = Object.keys(r.keys); delete r.keys;
+    return r;
+  }).filter(function(r){ return r.ids.length > 1; });
+  var searchable = regions.concat(feats);
+
+  statRow(cfg, [{ v: "0", l: "provinces", lead: true }, { v: "0", l: "countries" }, { v: "0%", l: "of land" }]);
+  var sh = listShell(cfg, "Provinces & states visited", store);
+  sh.acts.appendChild(clearBtn(store, "provinces"));
+
+  wireSearch(cfg, searchable, {
+    meta: function(e){
+      if (e.region) return e.cn + " · " + e.ids.length + " province" + (e.ids.length === 1 ? "" : "s");
+      return (e.rg && fold(e.rg) !== fold(e.n) ? e.rg + ", " : "") + e.cn;
+    },
+    marked: function(e){ return e.region ? store.hasAll(e.ids) : store.has(e.i); },
+    choose: function(e){
+      var on;
+      if (e.region) on = store.setMany(e.ids, !store.hasAll(e.ids));
+      else on = store.toggle(e.i);
+      if (!on) return;
+      var bb = e.region ? e.bb : e.b;
+      if (bb) view.ensure((bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2);
+      else if (e.pt) view.ensure(e.pt[0], e.pt[1]);
+    }
+  });
+
+  function render(){
+    var sel = [], area = 0, countries = {}, marks = [];
+    dots.innerHTML = "";
+    feats.forEach(function(f){
+      var on = store.has(f.i);
+      if (f.el) f.el.classList.toggle("on", on);
+      if (!on) return;
+      sel.push(f); area += f.a; countries[f.cn] = 1;
+      if (!f.el && f.pt){
+        var g = svgEl("g", {});
+        g.appendChild(svgEl("circle", { "class": "dot-o", r: 6 }));
+        g.appendChild(svgEl("circle", { "class": "dot-i", r: 4.2 }));
+        dots.appendChild(g);
+        marks.push({ el: g, x: f.pt[0], y: f.pt[1] });
+      }
+    });
+    view.setMarkers(marks);
+    var b = cfg.statsEl.querySelectorAll(".stat b");
+    b[0].textContent = fmt(sel.length);
+    b[1].textContent = fmt(Object.keys(countries).length);
+    b[2].textContent = (totalArea ? (area / totalArea * 100) : 0).toFixed(1) + "%";
+    sh.count.textContent = sel.length ? fmt(sel.length) + " of " + fmt(feats.length) : "";
+    if (!sel.length){
+      sh.body.innerHTML = '<p class="empty">Nothing marked yet. Search for a province, state, department or region above, or tap one on the map. Boundaries are first-level divisions — provinces in Argentina, states in the US, régions in France.</p>';
+      return;
+    }
+    var by = {};
+    sel.forEach(function(f){ (by[f.cn] = by[f.cn] || []).push(f); });
+    var groups = Object.keys(by).sort().map(function(k){
+      return { name: (by[k][0].f ? by[k][0].f + "  " : "") + k,
+               items: by[k].sort(function(a, c){ return a.n.localeCompare(c.n); }) };
+    });
+    groupList(sh.body, groups, function(f){
+      return itemRow("", f.n, (f.rg && fold(f.rg) !== fold(f.n)) ? f.rg : (f.t && f.t !== "Province" ? f.t : ""),
+        function(){
+          if (f.b) view.fit(f.b);
+          else if (f.pt) view.centreOn(f.pt[0], f.pt[1], MAPW / 250);
+          cfg.mapwrap.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        },
+        function(){ store.remove(f.i); });
+    });
+  }
+  store.on(render);
+  render();
+}
+
+/* ----------------------------------------------------------- plate III */
+function initCities(cfg, bundle){
+  var data = bundle[0], world = bundle[1];
+  var store = cfg.store = new Store("cities");
+  var cnames = data.countries || {}, cflags = data.flags || {}, provPool = data.provinces || [];
+  var entries = [], byId = {};
+  data.rows.split("\n").forEach(function(line){
+    if (!line) return;
+    var c = line.split("\t");
+    var e = { i: c[0], n: c[1], x: +c[2], y: +c[3], cc: c[4],
+              pv: provPool[+c[5]] || "", p: +c[6], s: c[7],
+              f: cflags[c[4]] || "", cn: cnames[c[4]] || c[4] };
+    entries.push(e); byId[e.i] = e;
+  });
+
+  var view = cfg.view = new MapView(cfg.mapwrap, {
+    borderWidth: 1.1,
+    onPick: function(id){ store.toggle(id); cfg.refreshSearch(); },
+    label: null
+  });
+  var frag = document.createDocumentFragment(), cull = [];
+  world.features.forEach(function(f){
+    var e = svgEl("path", { d: f.dc || f.d, "fill-rule": "evenodd" });
+    frag.appendChild(e);
+    cull.push({ el: e, b: f.b, d: f.d, dc: f.dc, cur: f.dc || f.d });
+  });
+  view.shapes.appendChild(frag);
+  view.setCullables(cull);
+  view.shapes.style.pointerEvents = "none";
+  var pins = svgEl("g", { "class": "pins" });
+  view.over.appendChild(pins);
+  view.pickRoot = pins;
+
+  statRow(cfg, [{ v: "0", l: "cities", lead: true }, { v: "0", l: "countries" }]);
+  var sh = listShell(cfg, "Cities visited", store);
+  var lab = el("label", "labeltoggle");
+  var cb = el("input"); cb.type = "checkbox"; cb.id = "citylabels"; cb.checked = true;
+  lab.appendChild(cb); lab.appendChild(document.createTextNode("Names on map"));
+  cb.addEventListener("change", function(){ view.svg.classList.toggle("nolabels", !cb.checked); });
+  sh.acts.appendChild(lab);
+  sh.acts.appendChild(clearBtn(store, "cities"));
+
+  wireSearch(cfg, entries, {
+    meta: function(e){ return (e.pv ? e.pv + ", " : "") + e.cn; },
+    choose: function(e){
+      var on = store.toggle(e.i);
+      if (on) view.ensure(e.x, e.y);
+    }
+  });
+
+  function render(){
+    var sel = [], countries = {};
+    store.ids.forEach(function(id){ if (byId[id]) sel.push(byId[id]); });
+    sel.sort(function(a, b){ return b.p - a.p; });
+    pins.innerHTML = "";
+    var f2 = document.createDocumentFragment(), marks = [];
+    sel.forEach(function(e){
+      countries[e.cn] = 1;
+      var g = svgEl("g", { "data-id": e.i });
+      g.appendChild(svgEl("circle", { "class": "pin-o", r: 6.4 }));
+      g.appendChild(svgEl("circle", { "class": "pin-i", r: 4.4 }));
+      var t = svgEl("text", { "class": "pinlabel", x: 9, y: 0, dy: "0.34em", "text-anchor": "start" });
+      t.textContent = e.n;
+      g.appendChild(t);
+      g.appendChild(svgEl("circle", { "class": "pin-hit", r: 13 }));
+      f2.appendChild(g);
+      marks.push({ el: g, x: e.x, y: e.y });
+    });
+    pins.appendChild(f2);
+    view.setMarkers(marks);
+    var b = cfg.statsEl.querySelectorAll(".stat b");
+    b[0].textContent = fmt(sel.length);
+    b[1].textContent = fmt(Object.keys(countries).length);
+    sh.count.textContent = sel.length ? fmt(sel.length) + " marked" : "";
+    if (!sel.length){
+      sh.body.innerHTML = '<p class="empty">Nothing marked yet. Search for a city above — every town over about 15,000 people is in here, so small places count too. Tap a dot on the map to remove it again.</p>';
+      return;
+    }
+    var by = {};
+    sel.forEach(function(e){ (by[e.cn] = by[e.cn] || []).push(e); });
+    var groups = Object.keys(by).sort().map(function(k){
+      return { name: (by[k][0].f ? by[k][0].f + "  " : "") + k,
+               items: by[k].sort(function(a, c){ return a.n.localeCompare(c.n); }) };
+    });
+    groupList(sh.body, groups, function(e){
+      return itemRow("", e.n, e.pv === e.n ? "" : e.pv,
+        function(){ view.centreOn(e.x, e.y, Math.min(view.vw, MAPW / 400)); cfg.mapwrap.scrollIntoView({ block: "nearest", behavior: "smooth" }); },
+        function(){ store.remove(e.i); });
+    });
+  }
+  store.on(render);
+  render();
+}
+
+
+/* ------------------------------------------------- backup and restore ----
+   A standalone app keeps your places on the device it runs on, so this is how
+   they travel: a small file you can send to yourself, or keep. */
+var KEYS = ["countries", "provinces", "cities"];
+function readKey(k){
+  var s = LIVE[k];
+  if (s) return Array.from(s.ids);
+  try { return JSON.parse(localStorage.getItem("atlas:" + k)) || []; } catch (e) { return []; }
+}
+function writeKey(k, ids){
+  var s = LIVE[k];
+  if (s){ s.ids = new Set(ids); s.cache(); s.emit(); return; }
+  try { localStorage.setItem("atlas:" + k, JSON.stringify(ids)); } catch (e) {}
+}
+function note(msg){
+  var el = document.getElementById("backupNote");
+  if (!el) return;
+  el.textContent = msg;
+  clearTimeout(note._t);
+  note._t = setTimeout(function(){ el.textContent = ""; }, 6000);
+}
+document.getElementById("exportBtn").addEventListener("click", function(){
+  var out = { app: "atlas-of-visits", version: 1, saved: new Date().toISOString() };
+  var total = 0;
+  KEYS.forEach(function(k){ out[k] = readKey(k); total += out[k].length; });
+  if (!total){ note("Nothing marked yet."); return; }
+  var name = "atlas-of-visits-" + new Date().toISOString().slice(0, 10) + ".json";
+  var blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+  var file = null;
+  try { file = new File([blob], name, { type: "application/json" }); } catch (e) {}
+  /* iOS handles a share sheet far better than a download link from a
+     home-screen app, so prefer it where it is offered. */
+  if (file && navigator.canShare && navigator.canShare({ files: [file] })){
+    navigator.share({ files: [file], title: "Atlas of Visits backup" })
+      .then(function(){ note("Backed up " + total + " places."); })
+      .catch(function(){});
+    return;
+  }
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  note("Backed up " + total + " places.");
+});
+document.getElementById("importBtn").addEventListener("click", function(){
+  document.getElementById("importFile").click();
+});
+document.getElementById("importFile").addEventListener("change", function(e){
+  var f = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    var data;
+    try { data = JSON.parse(r.result); } catch (err) { note("That file isn't a backup."); return; }
+    if (!data || KEYS.every(function(k){ return !Array.isArray(data[k]); })){
+      note("That file isn't a backup."); return;
+    }
+    var total = 0;
+    KEYS.forEach(function(k){
+      if (!Array.isArray(data[k])) return;
+      var ids = data[k].filter(function(v){ return typeof v === "string"; });
+      writeKey(k, ids); total += ids.length;
+    });
+    note("Restored " + total + " places.");
+  };
+  r.readAsText(f);
+});
+
+if ("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
+}
+
+/* ------------------------------------------------------------------ go */
+var start = "countries";
+try { var t = localStorage.getItem("atlas:tab"); if (t && panels[t]) start = t; } catch (e) {}
+show(start);
+window.addEventListener("resize", function(){
+  PANELS.forEach(function(c){ if (c.view) c.view.measure(); });
+});
+})();
+</script>
+</body>
+</html>
